@@ -1,0 +1,9 @@
+node_modules/
+.env
+*.log
+
+# Hardhat build artifacts
+contracts/artifacts/
+contracts/cache/
+
+# Keep the ledger file tracked but reset before submitting if you want a clean demo
