@@ -1,0 +1,10 @@
+[
+  {
+    "auditId": "LT-2026-00124",
+    "docHash": "286ae126233f095b363ff2a97461c8fad1b5f0b4668ab7809aab5f65c966c3bc",
+    "decisionHash": "14662d77fa5f622a51ab16ba0b2d13e341fed1cb22ef395d95a21bfdeadd4951",
+    "timestamp": 1789211314781,
+    "txHash": "0x3ae667a1be8b32c86a4b09af6813e3d7c0e982211528f2b21323f318634e9892",
+    "mode": "local-simulated"
+  }
+]
