@@ -1,0 +1,23 @@
+DATA PROCESSING ADDENDUM — DataFlow Inc.
+
+Section 1. Purpose. This Addendum governs the processing of personal data
+by Processor on behalf of Controller in connection with the Services.
+
+Section 2. Data Minimization. Processor shall process personal data only
+to the extent strictly necessary for the purposes set out in Schedule A.
+
+Section 3. Security Measures. Processor shall implement appropriate
+technical and organizational measures, including encryption of personal
+data at rest and in transit.
+
+Section 4. Sub-processing. Processor may engage sub-processors provided
+that Controller is given prior written notice of any intended changes.
+
+Section 5. Breach Notification. Processor shall notify Controller of a
+personal data breach without undue delay.
+
+Section 6. Data Subject Rights. [Reserved — process to be finalized in
+a future amendment.]
+
+Section 7. International Transfers. Any transfer of personal data outside
+the Controller's jurisdiction shall rely on an approved transfer mechanism.
