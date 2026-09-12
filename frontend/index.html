@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LexTrust AI — Auditable Compliance Decisions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#12203A;
+    --ink-2:#1B2E52;
+    --paper:#FAF6EC;
+    --paper-2:#F1EBDA;
+    --line:#DDD3B8;
+    --slate:#5B6472;
+    --brass:#A9772F;
+    --brass-light:#C99A4E;
+    --seal:#1E5C45;
+    --seal-light:#2F7D5E;
+    --danger:#8C2C2C;
+    --danger-light:#B54040;
+    --amber:#96631D;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'IBM Plex Sans', sans-serif;
+    min-height:100vh;
+  }
+  .frame{
+    max-width:1180px;
+    margin:0 auto;
+    padding:0 28px 80px;
+  }
+  header.top{
+    padding:38px 28px 26px;
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    max-width:1180px;
+    margin:0 auto;
+    border-bottom:1px solid rgba(250,246,236,0.12);
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  .brand{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+  }
+  .brand-mark{
+    width:34px;height:34px;
+    border:1.5px solid var(--brass-light);
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Newsreader', serif;
+    font-style:italic;
+    font-size:17px;
+    color:var(--brass-light);
+    flex-shrink:0;
+  }
+  .brand h1{
+    font-family:'Newsreader', serif;
+    font-weight:500;
+    font-size:26px;
+    margin:0;
+    letter-spacing:0.2px;
+    color:var(--paper);
+  }
+  .case-id{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:rgba(250,246,236,0.55);
+    text-align:right;
+    line-height:1.6;
+  }
+  .conn-status{
+    font-size:11px;
+    margin-top:4px;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    justify-content:flex-end;
+    width:100%;
+  }
+  .conn-dot{width:6px;height:6px;border-radius:50%;background:var(--slate);}
+  .conn-dot.live{background:var(--seal-light);}
+  .conn-dot.offline{background:var(--brass-light);}
+  .tagline{
+    max-width:1180px;
+    margin:0 auto;
+    padding:20px 28px 0;
+    font-family:'Newsreader', serif;
+    font-style:italic;
+    font-size:16.5px;
+    color:rgba(250,246,236,0.72);
+    max-width:520px;
+  }
+
+  .layout{
+    display:grid;
+    grid-template-columns:220px 1fr;
+    gap:36px;
+    margin-top:34px;
+  }
+
+  .docket{
+    border-right:1px solid rgba(250,246,236,0.12);
+    padding-right:20px;
+  }
+  .docket-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.5px;
+    color:rgba(250,246,236,0.4);
+    margin-bottom:18px;
+  }
+  .step{
+    display:flex;
+    gap:12px;
+    padding:12px 0;
+    cursor:pointer;
+    border-bottom:1px solid rgba(250,246,236,0.08);
+    opacity:0.45;
+    transition:opacity 0.25s ease;
+  }
+  .step:last-child{border-bottom:none;}
+  .step.active, .step.done{opacity:1;}
+  .step.locked{cursor:not-allowed;}
+  .step-num{
+    font-family:'Newsreader', serif;
+    font-style:italic;
+    font-size:17px;
+    color:var(--brass-light);
+    width:20px;
+    flex-shrink:0;
+  }
+  .step-text{font-size:13.5px;line-height:1.4;}
+  .step-title{font-weight:500;}
+  .step-sub{color:rgba(250,246,236,0.5);font-size:11.5px;margin-top:2px;}
+  .step.done .step-num{color:var(--seal-light);}
+
+  .panel{
+    background:var(--paper);
+    color:var(--ink);
+    border-radius:3px;
+    padding:36px 40px 40px;
+    min-height:420px;
+    box-shadow:0 30px 60px -30px rgba(0,0,0,0.5);
+  }
+  .panel h2{
+    font-family:'Newsreader', serif;
+    font-weight:500;
+    font-size:23px;
+    margin:0 0 6px;
+    color:var(--ink);
+  }
+  .panel .sub{
+    font-size:13.5px;
+    color:var(--slate);
+    margin-bottom:26px;
+    max-width:560px;
+  }
+  hr.rule{
+    border:none;border-top:1px solid var(--line);
+    margin:24px 0;
+  }
+
+  .btn{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:13.5px;
+    font-weight:500;
+    padding:11px 22px;
+    border-radius:2px;
+    border:1px solid var(--ink);
+    background:var(--ink);
+    color:var(--paper);
+    cursor:pointer;
+    transition:transform 0.12s ease, background 0.2s ease;
+  }
+  .btn:hover{background:var(--ink-2);}
+  .btn:active{transform:scale(0.98);}
+  .btn.ghost{
+    background:transparent;
+    color:var(--ink);
+    border:1px solid var(--ink);
+  }
+  .btn.ghost:hover{background:rgba(18,32,58,0.06);}
+  .btn:disabled{opacity:0.35;cursor:not-allowed;}
+  .btn.brass{background:var(--brass);border-color:var(--brass);}
+  .btn.brass:hover{background:var(--brass-light);}
+
+  .dropzone{
+    border:1.5px dashed var(--line);
+    border-radius:3px;
+    padding:34px;
+    text-align:center;
+    background:rgba(255,255,255,0.4);
+  }
+  .doc-name{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    margin-top:6px;
+    color:var(--slate);
+  }
+  textarea{
+    width:100%;
+    min-height:180px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    line-height:1.6;
+    padding:16px;
+    border:1px solid var(--line);
+    border-radius:3px;
+    background:#fff;
+    color:var(--ink);
+    resize:vertical;
+  }
+
+  .agent-row{
+    display:flex;
+    gap:14px;
+    align-items:flex-start;
+    padding:13px 0;
+    border-bottom:1px solid var(--line);
+    opacity:0;
+    transform:translateY(4px);
+    transition:opacity 0.4s ease, transform 0.4s ease;
+  }
+  .agent-row.show{opacity:1;transform:translateY(0);}
+  .agent-dot{
+    width:9px;height:9px;border-radius:50%;
+    background:var(--line);
+    margin-top:6px;
+    flex-shrink:0;
+    transition:background 0.3s ease;
+  }
+  .agent-row.show .agent-dot{background:var(--seal-light);}
+  .agent-name{font-weight:600;font-size:13.5px;}
+  .agent-out{font-size:12.5px;color:var(--slate);margin-top:2px;font-family:'IBM Plex Mono', monospace;}
+
+  .decision-strip{
+    display:flex;
+    gap:28px;
+    margin:22px 0 8px;
+    flex-wrap:wrap;
+  }
+  .metric{min-width:120px;}
+  .metric-val{font-family:'Newsreader', serif;font-size:34px;font-weight:500;}
+  .metric-label{font-size:11.5px;color:var(--slate);letter-spacing:0.3px;}
+  .pill{
+    display:inline-block;
+    padding:4px 12px;
+    border-radius:20px;
+    font-size:11.5px;
+    font-weight:600;
+    letter-spacing:0.3px;
+  }
+  .pill.pass{background:rgba(30,92,69,0.12);color:var(--seal);}
+  .pill.warn{background:rgba(150,99,29,0.14);color:var(--amber);}
+  .pill.fail{background:rgba(140,44,44,0.13);color:var(--danger);}
+
+  table.ev{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:8px;
+    font-size:13px;
+  }
+  table.ev th{
+    text-align:left;
+    font-size:11px;
+    letter-spacing:0.3px;
+    color:var(--slate);
+    font-weight:500;
+    padding:8px 10px;
+    border-bottom:1px solid var(--ink);
+  }
+  table.ev td{
+    padding:12px 10px;
+    border-bottom:1px solid var(--line);
+    vertical-align:top;
+  }
+  table.ev td.req{font-weight:500;}
+  table.ev td.ev-src{font-family:'IBM Plex Mono', monospace;font-size:11.5px;color:var(--slate);}
+
+  .hash-card{
+    background:var(--ink);
+    color:var(--paper);
+    border-radius:3px;
+    padding:22px 24px;
+    margin:18px 0;
+  }
+  .hash-row{
+    display:flex;
+    justify-content:space-between;
+    gap:20px;
+    padding:9px 0;
+    border-bottom:1px solid rgba(250,246,236,0.12);
+    font-size:12.5px;
+    flex-wrap:wrap;
+  }
+  .hash-row:last-child{border-bottom:none;}
+  .hash-key{color:rgba(250,246,236,0.55);}
+  .hash-val{font-family:'IBM Plex Mono', monospace;word-break:break-all;text-align:right;}
+
+  .ledger{
+    width:100%;
+    border-collapse:collapse;
+    font-size:12.5px;
+    margin-top:10px;
+  }
+  .ledger th{
+    text-align:left;font-size:10.5px;letter-spacing:0.3px;
+    color:var(--slate);font-weight:500;padding:7px 8px;
+    border-bottom:1px solid var(--ink);
+  }
+  .ledger td{padding:9px 8px;border-bottom:1px solid var(--line);
+    font-family:'IBM Plex Mono', monospace;font-size:11.5px;}
+
+  .verify-banner{
+    border-radius:3px;
+    padding:22px 24px;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    margin-bottom:22px;
+  }
+  .verify-banner.ok{background:rgba(30,92,69,0.1);border:1px solid var(--seal);}
+  .verify-banner.bad{background:rgba(140,44,44,0.09);border:1px solid var(--danger);}
+  .seal-badge{
+    width:52px;height:52px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+    font-family:'Newsreader', serif;font-style:italic;font-size:22px;
+    border:2px solid;
+  }
+  .seal-badge.ok{border-color:var(--seal);color:var(--seal);}
+  .seal-badge.bad{border-color:var(--danger);color:var(--danger);}
+  .verify-title{font-family:'Newsreader', serif;font-size:19px;margin-bottom:3px;}
+  .verify-title.ok{color:var(--seal);}
+  .verify-title.bad{color:var(--danger);}
+  .verify-sub{font-size:13px;color:var(--slate);}
+
+  .footer-nav{
+    display:flex;
+    justify-content:space-between;
+    margin-top:30px;
+  }
+  .field-label{
+    font-size:11.5px;
+    letter-spacing:0.3px;
+    color:var(--slate);
+    margin-bottom:8px;
+    display:block;
+  }
+  .note{
+    font-size:11.5px;
+    color:var(--slate);
+    margin-top:10px;
+  }
+
+  @media (max-width:820px){
+    .layout{grid-template-columns:1fr;}
+    .docket{border-right:none;border-bottom:1px solid rgba(250,246,236,0.12);padding-right:0;padding-bottom:10px;display:flex;flex-wrap:wrap;gap:0;}
+    .step{flex:1 1 45%;}
+    .panel{padding:26px 20px 30px;}
+    header.top{flex-direction:column;align-items:flex-start;gap:8px;}
+    .case-id{text-align:left;}
+    .conn-status{justify-content:flex-start;}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <div class="brand-mark">Lt</div>
+    <h1>LexTrust AI</h1>
+  </div>
+  <div class="case-id">
+    CASE NO. LT-2026-00124<br>DataFlow Inc. — Data Processing Addendum
+    <div class="conn-status"><span class="conn-dot" id="connDot"></span><span id="connText">checking backend…</span></div>
+  </div>
+</header>
+<p class="tagline">AI can make a decision. LexTrust lets you understand it, verify it, and prove the record wasn't altered.</p>
+
+<div class="frame">
+  <div class="layout">
+    <nav class="docket">
+      <div class="docket-label">CASE DOCKET</div>
+      <div class="step active" data-stage="1" onclick="goStage(1)">
+        <div class="step-num">I</div>
+        <div class="step-text"><div class="step-title">Intake</div><div class="step-sub">Upload the document</div></div>
+      </div>
+      <div class="step locked" data-stage="2" onclick="goStage(2)">
+        <div class="step-num">II</div>
+        <div class="step-text"><div class="step-title">Analysis</div><div class="step-sub">Agents review the text</div></div>
+      </div>
+      <div class="step locked" data-stage="3" onclick="goStage(3)">
+        <div class="step-num">III</div>
+        <div class="step-text"><div class="step-title">Evidence</div><div class="step-sub">Requirement by requirement</div></div>
+      </div>
+      <div class="step locked" data-stage="4" onclick="goStage(4)">
+        <div class="step-num">IV</div>
+        <div class="step-text"><div class="step-title">Anchor</div><div class="step-sub">Seal the decision on-chain</div></div>
+      </div>
+      <div class="step locked" data-stage="5" onclick="goStage(5)">
+        <div class="step-num">V</div>
+        <div class="step-text"><div class="step-title">Verify</div><div class="step-sub">Check for tampering</div></div>
+      </div>
+    </nav>
+
+    <div class="panel" id="panel"></div>
+  </div>
+</div>
+
+<script>
+/* ================= connection ================= */
+const AUDIT_ID = "LT-2026-00124";
+let BACKEND_LIVE = false;
+
+async function checkBackend(){
+  try{
+    const res = await fetch('/api/health', { cache: 'no-store' });
+    if(!res.ok) throw new Error('bad status');
+    const data = await res.json();
+    BACKEND_LIVE = true;
+    document.getElementById('connDot').className = 'conn-dot live';
+    document.getElementById('connText').textContent = `backend connected · ${data.chainMode} chain`;
+  }catch(e){
+    BACKEND_LIVE = false;
+    document.getElementById('connDot').className = 'conn-dot offline';
+    document.getElementById('connText').textContent = 'backend offline · running local demo mode';
+  }
+}
+
+/* ================= state ================= */
+const state = {
+  stage: 1,
+  docName: "DataFlow_DPA_v3.pdf",
+  docText: `DATA PROCESSING ADDENDUM — DataFlow Inc.
+
+Section 1. Purpose. This Addendum governs the processing of personal data
+by Processor on behalf of Controller in connection with the Services.
+
+Section 2. Data Minimization. Processor shall process personal data only
+to the extent strictly necessary for the purposes set out in Schedule A.
+
+Section 3. Security Measures. Processor shall implement appropriate
+technical and organizational measures, including encryption of personal
+data at rest and in transit.
+
+Section 4. Sub-processing. Processor may engage sub-processors provided
+that Controller is given prior written notice of any intended changes.
+
+Section 5. Breach Notification. Processor shall notify Controller of a
+personal data breach without undue delay.
+
+Section 6. Data Subject Rights. [Reserved — process to be finalized in
+a future amendment.]
+
+Section 7. International Transfers. Any transfer of personal data outside
+the Controller's jurisdiction shall rely on an approved transfer mechanism.`,
+  analysis: null,   // result from /api/analyze (or local fallback)
+  anchored: null,   // result from /api/anchor
+};
+
+/* ============ local fallback (used only if backend is offline) ============ */
+function localAnalyze(docText){
+  const reqs = [
+    { id: 1, text: "Purpose limitation is defined", section: "Section 1", status: "pass", confidence: 97 },
+    { id: 2, text: "Data minimization obligation present", section: "Section 2", status: "pass", confidence: 97 },
+    { id: 3, text: "Encryption required at rest & in transit", section: "Section 3", status: "pass", confidence: 97 },
+    { id: 4, text: "Sub-processor notice obligation", section: "Section 4", status: "pass", confidence: 97 },
+    { id: 5, text: "Breach notification timeline specified", section: "Section 5", status: "warn", confidence: 63 },
+    { id: 6, text: "Data subject rights procedure defined", section: "Section 6", status: "fail", confidence: 15 },
+    { id: 7, text: "International transfer mechanism named", section: "Section 7", status: "warn", confidence: 63 },
+  ];
+  const agentLog = [
+    { name: "Document Agent", output: "Extracted 7 sections · parsed clause boundaries" },
+    { name: "Legal / RAG Agent", output: "Matched 7 requirements against retrieved clauses" },
+    { name: "Compliance Agent", output: "4 satisfied · 2 flagged for review · 1 missing" },
+    { name: "Risk Agent", output: "Unresolved obligation — Data subject rights (Section 6)" },
+    { name: "Decision Agent", output: "Verdict: NON-COMPLIANT · Risk level: HIGH" },
+  ];
+  return {
+    agentLog,
+    requirements: reqs,
+    risk: { level: "HIGH" },
+    decision: { score: 57, riskLevel: "HIGH", verdict: "NON-COMPLIANT" },
+  };
+}
+async function localHash(text){
+  try{
+    const enc = new TextEncoder().encode(text);
+    const buf = await crypto.subtle.digest('SHA-256', enc);
+    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  }catch(e){
+    let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+    for(let i=0;i<text.length;i++){
+      const ch = text.charCodeAt(i);
+      h1 = Math.imul(h1 ^ ch, 2654435761);
+      h2 = Math.imul(h2 ^ ch, 1597334677);
+    }
+    h1 = (h1 ^ (h1>>>16)) >>> 0;
+    h2 = (h2 ^ (h2>>>16)) >>> 0;
+    return (h1.toString(16).padStart(8,'0') + h2.toString(16).padStart(8,'0')).repeat(4).slice(0,64);
+  }
+}
+
+/* ================= API calls (with fallback) ================= */
+async function callAnalyze(docText){
+  if(BACKEND_LIVE){
+    try{
+      const res = await fetch('/api/analyze', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ docText })
+      });
+      if(res.ok) return await res.json();
+    }catch(e){ /* fall through to local */ }
+  }
+  return localAnalyze(docText);
+}
+async function callAnchor(auditId, docText, decision){
+  if(BACKEND_LIVE){
+    try{
+      const res = await fetch('/api/anchor', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ auditId, docText, decision })
+      });
+      if(res.ok) return await res.json();
+    }catch(e){ /* fall through */ }
+  }
+  const docHash = await localHash(docText);
+  const decisionHash = await localHash(JSON.stringify(decision));
+  return { auditId, docHash, decisionHash, timestamp: Date.now(), txHash: "0x"+(await localHash(docHash+decisionHash)), mode: "local-simulated" };
+}
+async function callVerify(auditId, docText){
+  if(BACKEND_LIVE){
+    try{
+      const res = await fetch('/api/verify', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ auditId, docText })
+      });
+      if(res.ok) return await res.json();
+    }catch(e){ /* fall through */ }
+  }
+  const currentHash = await localHash(docText);
+  const anchoredHash = state.anchored.docHash;
+  return { verified: currentHash === anchoredHash, anchoredHash, currentHash };
+}
+
+/* ================= helpers ================= */
+function shortHash(h){ return h ? h.slice(0,10) + "…" + h.slice(-8) : "—"; }
+function fmtTime(ts){
+  const d = new Date(ts);
+  return d.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}) + " · " + d.toLocaleTimeString();
+}
+
+/* ================= nav ================= */
+function refreshDocket(){
+  document.querySelectorAll('.step').forEach(el=>{
+    const s = parseInt(el.dataset.stage);
+    el.classList.remove('active','done','locked');
+    if(s < state.stage) el.classList.add('done');
+    else if(s === state.stage) el.classList.add('active');
+    else el.classList.add('locked');
+  });
+}
+function goStage(n){
+  if(n > state.stage) return;
+  state.stage = n;
+  render();
+}
+function advance(n){
+  state.stage = n;
+  render();
+}
+
+/* ================= render ================= */
+function render(){
+  refreshDocket();
+  const p = document.getElementById('panel');
+  if(state.stage===1) p.innerHTML = stage1();
+  if(state.stage===2) { p.innerHTML = stage2(); setTimeout(runAnalysis, 150); }
+  if(state.stage===3) p.innerHTML = stage3();
+  if(state.stage===4) { p.innerHTML = stage4(); setTimeout(initHashPreview, 50); }
+  if(state.stage===5) p.innerHTML = stage5();
+}
+
+function stage1(){
+  return `
+    <h2>Upload the document</h2>
+    <p class="sub">LexTrust reads the addendum, chunks it by clause, and prepares it for the agent pipeline. Nothing leaves this session until you choose to anchor a decision.</p>
+    <div class="dropzone">
+      <div style="font-size:14px;">📄 <strong>${state.docName}</strong></div>
+      <div class="doc-name">${state.docText.trim().split('\\n').length} lines · ready to analyze</div>
+    </div>
+    <hr class="rule">
+    <span class="field-label">Document text (extracted)</span>
+    <textarea id="docText" oninput="state.docText=this.value">${state.docText}</textarea>
+    <div class="footer-nav">
+      <span></span>
+      <button class="btn" onclick="state.docText=document.getElementById('docText').value; advance(2)">Run analysis →</button>
+    </div>
+  `;
+}
+
+function stage2(){
+  return `
+    <h2>Agents review the addendum</h2>
+    <p class="sub">Five specialized agents work in sequence — each hands its findings to the next.</p>
+    <div id="agentList"></div>
+    <div class="footer-nav">
+      <button class="btn ghost" onclick="goStage(1)">← Back</button>
+      <button class="btn" id="toEvidence" disabled onclick="advance(3)">See evidence →</button>
+    </div>
+  `;
+}
+async function runAnalysis(){
+  const result = await callAnalyze(state.docText);
+  state.analysis = result;
+  const list = document.getElementById('agentList');
+  if(!list) return;
+  list.innerHTML = result.agentLog.map((a,i)=>`
+    <div class="agent-row" id="row${i}">
+      <div class="agent-dot"></div>
+      <div>
+        <div class="agent-name">${a.name}</div>
+        <div class="agent-out">${a.output}</div>
+      </div>
+    </div>`).join('');
+  result.agentLog.forEach((a,i)=>{
+    setTimeout(()=>{
+      const row = document.getElementById('row'+i);
+      if(row) row.classList.add('show');
+      if(i===result.agentLog.length-1){
+        const btn = document.getElementById('toEvidence');
+        if(btn) btn.disabled = false;
+      }
+    }, 450*i + 200);
+  });
+}
+
+function stage3(){
+  const a = state.analysis;
+  const rows = a.requirements.map(r=>`
+    <tr>
+      <td class="req">${r.text}</td>
+      <td><span class="pill ${r.status}">${r.status==='pass'?'SATISFIED':r.status==='warn'?'REVIEW':'MISSING'}</span></td>
+      <td class="ev-src">${r.section}</td>
+      <td>${r.confidence}%</td>
+    </tr>`).join('');
+  return `
+    <h2>Requirement-by-requirement evidence</h2>
+    <p class="sub">Every verdict is traceable to the clause that produced it — no requirement is marked satisfied without a citation.</p>
+    <div class="decision-strip">
+      <div class="metric"><div class="metric-val">${a.decision.score}%</div><div class="metric-label">COMPLIANCE SCORE</div></div>
+      <div class="metric"><div class="metric-val">${a.decision.riskLevel}</div><div class="metric-label">RISK LEVEL</div></div>
+      <div class="metric"><div class="metric-val" style="font-size:22px;">${a.decision.verdict}</div><div class="metric-label">DECISION</div></div>
+    </div>
+    <table class="ev">
+      <tr><th>Requirement</th><th>Status</th><th>Source</th><th>Confidence</th></tr>
+      ${rows}
+    </table>
+    <div class="footer-nav">
+      <button class="btn ghost" onclick="goStage(2)">← Back</button>
+      <button class="btn" onclick="advance(4)">Anchor this decision →</button>
+    </div>
+  `;
+}
+
+function stage4(){
+  return `
+    <h2>Seal the decision on-chain</h2>
+    <p class="sub">The document and the decision never leave this session — only their fingerprints are anchored. Anyone holding the audit ID can later confirm nothing changed.</p>
+    <div class="hash-card">
+      <div class="hash-row"><span class="hash-key">Document hash (SHA-256)</span><span class="hash-val" id="dh">computing…</span></div>
+      <div class="hash-row"><span class="hash-key">Decision hash (SHA-256)</span><span class="hash-val" id="ph">computing…</span></div>
+      <div class="hash-row"><span class="hash-key">Audit ID</span><span class="hash-val">${AUDIT_ID}</span></div>
+    </div>
+    <button class="btn brass" id="anchorBtn" onclick="doAnchor()">Anchor decision on blockchain</button>
+    <div id="anchorResult"></div>
+    <div class="footer-nav">
+      <button class="btn ghost" onclick="goStage(3)">← Back</button>
+      <button class="btn" id="toVerify" ${state.anchored?'':'disabled'} onclick="advance(5)">Go to verification →</button>
+    </div>
+  `;
+}
+async function initHashPreview(){
+  const dh = await localHash(state.docText);
+  const ph = await localHash(JSON.stringify(state.analysis.decision));
+  const dhEl = document.getElementById('dh');
+  const phEl = document.getElementById('ph');
+  if(dhEl) dhEl.textContent = shortHash(dh);
+  if(phEl) phEl.textContent = shortHash(ph);
+}
+async function doAnchor(){
+  const btn = document.getElementById('anchorBtn');
+  btn.disabled = true;
+  btn.textContent = "Anchoring…";
+  const record = await callAnchor(AUDIT_ID, state.docText, state.analysis.decision);
+  state.anchored = record;
+  document.getElementById('anchorResult').innerHTML = `
+    <div class="verify-banner ok" style="margin-top:18px;">
+      <div class="seal-badge ok">✓</div>
+      <div>
+        <div class="verify-title ok">Block confirmed</div>
+        <div class="verify-sub">Recorded ${fmtTime(record.timestamp)} · ${record.mode === 'onchain' ? 'on-chain tx' : 'simulated ledger'} · audit ID <strong>${record.auditId}</strong></div>
+      </div>
+    </div>
+    <table class="ledger">
+      <tr><th>Audit ID</th><th>Document hash</th><th>Decision hash</th><th>Tx / record hash</th></tr>
+      <tr><td>${record.auditId}</td><td>${shortHash(record.docHash)}</td><td>${shortHash(record.decisionHash)}</td><td>${shortHash(record.txHash)}</td></tr>
+    </table>
+    <p class="note">Mode: ${record.mode}. Switch the backend to CHAIN_MODE=onchain (see /contracts) to anchor to a real testnet instead.</p>
+  `;
+  btn.textContent = "Anchored ✓";
+  document.getElementById('toVerify').disabled = false;
+}
+
+function stage5(){
+  if(!state.anchored){
+    return `<h2>Nothing anchored yet</h2><p class="sub">Anchor a decision first, then come back to verify it.</p>
+    <div class="footer-nav"><button class="btn ghost" onclick="goStage(4)">← Back to anchoring</button><span></span></div>`;
+  }
+  return `
+    <h2>Verify the record</h2>
+    <p class="sub">Edit the document below the way a bad actor might, then re-check it against the anchored hash. Nothing is verified by trust — only by recomputation.</p>
+    <span class="field-label">Current document text</span>
+    <textarea id="verifyText">${state.docText}</textarea>
+    <div class="footer-nav" style="margin-top:14px;">
+      <button class="btn ghost" onclick="goStage(4)">← Back</button>
+      <button class="btn" onclick="doVerify()">Verify integrity</button>
+    </div>
+    <div id="verifyResult"></div>
+  `;
+}
+async function doVerify(){
+  const current = document.getElementById('verifyText').value;
+  const result = await callVerify(AUDIT_ID, current);
+  const box = document.getElementById('verifyResult');
+  const ok = result.verified;
+  box.innerHTML = `
+    <div class="verify-banner ${ok?'ok':'bad'}" style="margin-top:20px;">
+      <div class="seal-badge ${ok?'ok':'bad'}">${ok?'✓':'✕'}</div>
+      <div>
+        <div class="verify-title ${ok?'ok':'bad'}">${ok?'Integrity verified':'Tamper detected'}</div>
+        <div class="verify-sub">${ok?'The current text matches the anchored fingerprint exactly.':'The current text no longer matches the anchored fingerprint. This document has changed since it was sealed.'}</div>
+      </div>
+    </div>
+    <div class="hash-card">
+      <div class="hash-row"><span class="hash-key">Anchored hash</span><span class="hash-val">${shortHash(result.anchoredHash)}</span></div>
+      <div class="hash-row"><span class="hash-key">Recomputed hash</span><span class="hash-val">${shortHash(result.currentHash)}</span></div>
+    </div>
+  `;
+}
+
+/* ================= boot ================= */
+checkBackend().then(render);
+</script>
+</body>
+</html>
